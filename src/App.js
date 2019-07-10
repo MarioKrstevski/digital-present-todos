@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./App.css";
 import Modal from "./Modal";
 
@@ -8,22 +8,7 @@ function App() {
   const [selectedTodo, setSelectedTodo] = useState(null);
 
   useEffect(() => {
-    const fetchTodos = async () => {
-      // const response = await fetch("https://digitestapi.herokuapp.com/todos", {
-      //   method: "GET",
-      //   mode: "cors",
-      //   credentials: "include",
-      //   headers:new Headers({
-      //     'Authorization': 'Basic ZGlnaXRhbHByZXNlbnQ6bWFyaW9rcnN0ZXZza2khIzIwMTk=',
-      //     'Content-Type': 'application/json',
-      //     'Access-Control-Allow-Origin': true,
-      //     'Access-Control-Allow-Credentials':true,
-      //     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, HEAD',
-      //     'Access-Control-Allow-Headers': 'origin, content-type, accept, authorization',
-      //   }),
-      //   // body: JSON.stringify(data)
-      // });
-      const response = [
+         const response = [
         {
           id: 0,
           value: "Get shit done",
@@ -37,15 +22,42 @@ function App() {
       ];
       console.log({ response });
       setTodos(response);
-    };
+    
 
-    fetchTodos();
+    // getTodos();
   }, []);
 
   const todoNewValue = "test";
   const todoNewDesc = "test";
-  const editTodo = () => {
-    fetch(`https://digitestapi.herokuapp.com/todos/${selectedTodo.id}`, {
+
+  const valueInput = useRef(null);
+  const descriptionInput = useRef(null);
+
+  const getTodos = () => {
+    fetch(`https://digitestapi.herokuapp.com/todos`, {
+        method: "POST",
+        mode: "cors",
+        credentials: "include",
+        headers:new Headers({
+          'Authorization': 'Basic ZGlnaXRhbHByZXNlbnQ6bWFyaW9rcnN0ZXZza2khIzIwMTk=',
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': true,
+          'Access-Control-Allow-Credentials':true,
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, HEAD',
+          'Access-Control-Allow-Headers': 'origin, content-type, accept, authorization',
+        })
+      });
+  };
+
+  const editTodo = (id) => {
+
+    const data = new FormData();
+    const payload = {
+      'value': todoNewValue,
+      'description': todoNewDesc
+  };
+  data.append( "json", JSON.stringify( payload ) );
+    fetch(`https://digitestapi.herokuapp.com/todos/${id}`, {
         method: "POST",
         mode: "cors",
         credentials: "include",
@@ -57,14 +69,25 @@ function App() {
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, HEAD',
           'Access-Control-Allow-Headers': 'origin, content-type, accept, authorization',
         }),
-        body: JSON.stringify({
-          "value": todoNewValue,
-          "description" : todoNewDesc
-        })
+        body: data
       });
   };
 
   const addTodo = () => {
+
+    valueInput.current.focus();
+    descriptionInput.current.focus()
+
+    console.log(valueInput.current.value)
+    console.log(descriptionInput.current.value)
+
+    const data = new FormData();
+    const payload = {
+      'value': todoNewValue,
+      'description': todoNewDesc
+  };
+  data.append( "json", JSON.stringify( payload ) );
+
     fetch(`https://digitestapi.herokuapp.com/todos`, {
         method: "POST",
         mode: "cors",
@@ -77,15 +100,14 @@ function App() {
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, HEAD',
           'Access-Control-Allow-Headers': 'origin, content-type, accept, authorization',
         }),
-        body: JSON.stringify({
-          "value": todoNewValue,
-          "description" : todoNewDesc
-        })
+        body: data
       });
   }
 
-  const deleteTodo = () => {
-    fetch(`https://digitestapi.herokuapp.com/todos/${selectedTodo.id}`, {
+  const deleteTodo = (id) => {
+     
+
+    fetch(`https://digitestapi.herokuapp.com/todos/${id}`, {
         method: "DELETE",
         mode: "cors",
         credentials: "include",
@@ -138,9 +160,11 @@ function App() {
         {isModalOpen ? (
           <div className="modal-container">
             {null ? null : <div className="todo">
-                <p>Value:  {selectedTodo.value} </p>
-                <p>Description:  {selectedTodo.description} </p>
-                <button> Save </button>
+                <input ref={valueInput} type="text" placeholder="Value:"  />
+                <input ref={descriptionInput} type="text" placeholder="Description:"  />
+                <button onClick={()=> editTodo(selectedTodo.id) }> Save </button>
+                <button onClick={()=> addTodo()}> Create </button>
+                <button onClick={()=> deleteTodo(selectedTodo.id)}> Delete </button>
              </div>}
           </div>
         ) : (
