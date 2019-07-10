@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from "react";
 function useOutsideAlerter(ref, close) {
   function handleClickOutside(event) {
     if (ref.current && !ref.current.contains(event.target)) {
-        // console.log('Ref', ref , 'Close method:', close)
+      // console.log('Ref', ref , 'Close method:', close)
       close();
     }
   }
@@ -16,11 +16,10 @@ function useOutsideAlerter(ref, close) {
   });
 }
 
-function OutsideAlerter({children, close}) {
+function OutsideAlerter({ children, close }) {
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef, close);
   return <div ref={wrapperRef}>{children}</div>;
 }
-
 
 export default OutsideAlerter;

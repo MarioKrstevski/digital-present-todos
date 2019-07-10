@@ -23,7 +23,6 @@ function App() {
         description: "Coding test do some shit"
       }
     ];
-    console.log({ response });
     setTodos(response);
     setTodoCounter(response.length);
 
@@ -58,8 +57,6 @@ function App() {
 
   const editTodo = id => {
     if (valueInput.current !== null && !descriptionInput.current !== null) {
-      console.log("Value input", valueInput.current);
-      console.log("Desc input", descriptionInput.current);
       valueInput.current.focus();
       descriptionInput.current.focus();
 
@@ -169,15 +166,9 @@ function App() {
         }
         return 0;
       }
-
-      
-      console.log({ newTodos });
       let newer = [...newTodos, newTodo];
       newer.sort(sortById);
-      console.log({ newer });
-
       setTodos(newer);
-      console.log("Ejj ja rabotu");
     }
   };
   const fakeAddTodo = id => {
@@ -185,7 +176,6 @@ function App() {
       valueInput.current.focus();
       descriptionInput.current.focus();
 
-      console.log(todoCounter);
       let newTodo = {
         id: todoCounter + 1,
         value: valueInput.current.value,
@@ -216,7 +206,6 @@ function App() {
 
   const setCurrentTodo = id => {
     var currentTodo = todos.find(todo => todo.id === id);
-    console.log(currentTodo);
     setSelectedTodo(currentTodo);
   };
 
@@ -246,9 +235,13 @@ function App() {
                   <OutsideAlerter close={closeEditMode}>
                     <div>
                       {!editMode ? (
-                        <div >
-                          <p onClick={() => setEditMode(true)}>{selectedTodo.value}</p>
-                          <p onClick={() => setEditMode(true)}>{selectedTodo.description}</p>
+                        <div>
+                          <p onClick={() => setEditMode(true)}>
+                            {selectedTodo.value}
+                          </p>
+                          <p onClick={() => setEditMode(true)}>
+                            {selectedTodo.description}
+                          </p>
                         </div>
                       ) : (
                         <div>
