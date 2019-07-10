@@ -8,6 +8,7 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState(null);
   const [editMode, setEditMode] = useState(false);
+  const [todoCounter, setTodoCounter] = useState(todos.length);
 
   useEffect(() => {
     const response = [
@@ -24,6 +25,7 @@ function App() {
     ];
     console.log({ response });
     setTodos(response);
+    setTodoCounter(response.length);
 
     // getTodos();
   }, []);
@@ -56,10 +58,10 @@ function App() {
 
   const editTodo = id => {
     if (valueInput.current !== null && !descriptionInput.current !== null) {
-      console.log('Value input',valueInput.current)
-      console.log('Desc input',descriptionInput.current)
-    valueInput.current.focus();
-    descriptionInput.current.focus();
+      console.log("Value input", valueInput.current);
+      console.log("Desc input", descriptionInput.current);
+      valueInput.current.focus();
+      descriptionInput.current.focus();
 
       const data = new FormData();
       const payload = {
@@ -84,6 +86,7 @@ function App() {
         }),
         body: data
       });
+      fakeEditTodo(id);
 
       valueInput.current.value = "";
       descriptionInput.current.value = "";
@@ -93,8 +96,8 @@ function App() {
 
   const addTodo = () => {
     if (valueInput.current !== null && !descriptionInput.current !== null) {
-    valueInput.current.focus();
-    descriptionInput.current.focus();
+      valueInput.current.focus();
+      descriptionInput.current.focus();
       const data = new FormData();
       const payload = {
         value: valueInput.current.value,
@@ -121,6 +124,7 @@ function App() {
       });
       closeModal();
     }
+    fakeAddTodo();
   };
 
   const deleteTodo = id => {
@@ -140,7 +144,60 @@ function App() {
       body: null
     });
 
+    fakeDeleteTodo(id);
     closeModal();
+  };
+
+  const fakeEditTodo = id => {
+    if (valueInput.current !== null && !descriptionInput.current !== null) {
+      valueInput.current.focus();
+      descriptionInput.current.focus();
+
+      let newTodo = {
+        id,
+        value: valueInput.current.value,
+        description: descriptionInput.current.value
+      };
+      let newTodos = todos.filter(todo => todo.id !== id);
+
+      function sortById(a, b) {
+        if (a.id < b.id) {
+          return -1;
+        }
+        if (a.id > b.id) {
+          return 1;
+        }
+        return 0;
+      }
+
+      
+      console.log({ newTodos });
+      let newer = [...newTodos, newTodo];
+      newer.sort(sortById);
+      console.log({ newer });
+
+      setTodos(newer);
+      console.log("Ejj ja rabotu");
+    }
+  };
+  const fakeAddTodo = id => {
+    if (valueInput.current !== null && !descriptionInput.current !== null) {
+      valueInput.current.focus();
+      descriptionInput.current.focus();
+
+      console.log(todoCounter);
+      let newTodo = {
+        id: todoCounter + 1,
+        value: valueInput.current.value,
+        description: descriptionInput.current.value
+      };
+      setTodoCounter(todoCounter + 1);
+      setTodos([...todos, newTodo]);
+    }
+  };
+  const fakeDeleteTodo = id => {
+    let newTodos = todos.filter(todo => todo.id !== id);
+    setTodos(newTodos);
   };
 
   const switchModal = () => {
@@ -189,9 +246,9 @@ function App() {
                   <OutsideAlerter close={closeEditMode}>
                     <div>
                       {!editMode ? (
-                        <div onClick={() => setEditMode(true)}>
-                          <p>{selectedTodo.value}</p>
-                          <p>{selectedTodo.description}</p>
+                        <div >
+                          <p onClick={() => setEditMode(true)}>{selectedTodo.value}</p>
+                          <p onClick={() => setEditMode(true)}>{selectedTodo.description}</p>
                         </div>
                       ) : (
                         <div>
@@ -210,20 +267,20 @@ function App() {
                         </div>
                       )}
                     </div>
+                    <div className="buttons">
+                      <button onClick={() => editTodo(selectedTodo.id)}>
+                        Save
+                      </button>
+                      <button onClick={() => addTodo()}> Create </button>
+                      <button onClick={() => deleteTodo(selectedTodo.id)}>
+                        Delete
+                      </button>
+                      <button onClick={() => setEditMode(false)}>
+                        Exit Edit Mode
+                      </button>
+                      <button onClick={() => closeModal()}>Close Modal</button>
+                    </div>
                   </OutsideAlerter>
-                  <div className="buttons">
-                    <button onClick={() => editTodo(selectedTodo.id)}>
-                      Save
-                    </button>
-                    <button onClick={() => addTodo()}> Create </button>
-                    <button onClick={() => deleteTodo(selectedTodo.id)}>
-                      Delete
-                    </button>
-                    <button onClick={() => setEditMode(false)}>
-                      Exit Edit Mode
-                    </button>
-                    <button onClick={() => closeModal()}>Close Modal</button>
-                  </div>
                 </div>
               )}
             </div>
