@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import ReactDOM from "react-dom";
 
 const modalRoot = document.getElementById("modal");
-function Modal({ children, close }) {
+function Modal({ children }) {
   const el = document.createElement("div");
   useEffect(() => {
     modalRoot.appendChild(el);
