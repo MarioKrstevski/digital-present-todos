@@ -2,8 +2,9 @@ import { useEffect } from "react";
 import ReactDOM from "react-dom";
 
 const modalRoot = document.getElementById("modal");
+const el = document.createElement("div");
+
 function Modal({ children }) {
-  const el = document.createElement("div");
   useEffect(() => {
     modalRoot.appendChild(el);
 
